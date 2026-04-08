@@ -13,6 +13,8 @@ In RSU-assisted autonomous driving, the roadside unit (RSU) perceives surroundin
 
 Experiments in SUMO using real-world NGSIM traffic data show DAROM-GRU achieves **>99% success** in high-density traffic with random delays up to 2.0 seconds. The trained policy generalizes across five stochastic delay distributions (uniform, bimodal, bursty, triangular, exponential) without retraining.
 
+![DAROM Framework](assets/network.png)
+
 ## Repository Structure
 
 ```
