@@ -1,0 +1,107 @@
+# Virtual environment
+.venv/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# Experiment tracking
+wandb/
+runs/
+
+# Evaluation logs
+eval_logs_*/
+deval_logs_*/
+
+# Old evaluation result directories
+Easy*/
+Medium*/
+Hard*/
+easy_evaluations_*/
+medium_evaluations_*/
+hard_evaluations_*/
+
+# Old/backup model checkpoints
+delayedStateAndAction/
+delayedStateDelay/
+gruDelayedState/
+trans-delay-20/
+Harddrlormoc/
+
+# Non-uniform trained models (only keep uniform)
+models/GRU-bimodal-delay/
+models/GRU-bursty-delay/
+models/GRU-triangular-delay/
+models/GRU-exponential-delay/
+
+# Log and result text files
+debug.txt
+results.txt
+*.log
+full_gru_report.txt
+full_gru_no_safety.txt
+full_mlp.txt
+full_no_encoder.txt
+full_trans.txt
+easy_mpc.txt
+medium_mpc.txt
+hard_mpc.txt
+hard.txt
+
+# SUMO output files
+tripinfo.xml
+
+# Backup files (root-level only, preserves models/*.zip)
+/backup_*.zip
+*_b.py
+train_sac_delay_b.py
+
+# Shell scripts
+*.sh
+
+# Test / debug files
+test.py
+test_env.py
+test_mpc.py
+test/
+
+# Non-delay (undelayed) evaluation script
+evaluate_sac.py
+
+# Paper / LaTeX files
+*.tex
+
+# MPC baseline
+mpc.py
+easy_mpc.py
+run_evaluations.py
+
+# DRL-ORMOC baseline
+evaluate_sac_drlormoc.py
+train_sac_delay_drl_ormoc.py
+src/merging_drl_ormoc.py
+
+# Undelayed training script
+train_sac.py
+
+# PDFs (paper drafts)
+*.pdf
+
+# IDE / editor
+.vscode/
+.cursor/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db

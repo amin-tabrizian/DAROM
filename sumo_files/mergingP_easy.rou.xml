@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2025-11-17T12:38:09.297538-05:00 by Eclipse SUMO netedit v1_24_0+1549-ae831a14bcc
+-->
+
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
+    <!-- VTypes -->
+    <vType id="ego" length="5.00" maxSpeed="32.00" lcKeepRight="0" lcSpeedGainRight="0" lcOvertakeRight="0" accel="5" decel="5" sigma="0"/>
+
+    <vType id="customType" length="5.00" maxSpeed="60.00" lcKeepRight="0" lcSpeedGainRight="0" lcOvertakeRight="0" accel="5" decel="5" sigma="0"/>
+    <!-- Vehicles, persons and containers (sorted by depart) -->
+    <flow id="f_0" type="customType" begin="0.00" end="3600.00" probability="0.10" departLane="0" departSpeed="8.83" from="E2" to="E0"/>
+    <flow id="f_1" type="customType" begin="0.00" end="3600.00" probability="0.10" departLane="1" departSpeed="8.83" from="E2" to="E0"/>
+    <flow id="f_2" type="customType" begin="0.00" end="3600.00" probability="0.10" departLane="2" departSpeed="8.83" from="E2" to="E0"/>
+    <flow id="f_3" type="customType" begin="0.00" end="3600.00" probability="0.10" departLane="3" departSpeed="8.83" from="E2" to="E0"/>
+    <flow id="f_4" type="customType" begin="0.00" end="3600.00" probability="0.10" departLane="4" departSpeed="8.83" from="E2" to="E0"/>
+    <trip id="ego" type="ego" depart="10.00" color="red" from="E4" to="E0" departSpeed="10.0"/>
+</routes>
