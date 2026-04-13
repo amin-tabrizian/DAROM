@@ -191,3 +191,59 @@ class SafetyWrapper(ActionWrapper):
     def action(self, action):
         action, safety_info = safetyCheck(action, self.env.observation, True, 'all')
         return action
+
+
+class PhysicsPredictorWrapper(ObservationWrapper):
+    """
+    Wraps a DelayWrapper running in mode='all'.
+
+    The DelayWrapper outputs a flat vector:
+        [obs_flat | masked_action_hist | delay_scalar]
+
+    This wrapper applies constant-velocity kinematics to predict where each
+    neighbour vehicle is *now*, using the reported delay scalar and a fixed
+    simulation time step (dt = 0.1 s, matching SUMO --step-length 0.1).
+
+    Output observation: predicted current state, shape (num_entities * feature_dim,).
+    Ego (index 0) is always up-to-date (injected by DelayWrapper) and is left unchanged.
+    """
+
+    def __init__(self, env, dt: float = 0.1):
+        super().__init__(env)
+        self.dt = dt
+
+        # env is a DelayWrapper; orig_shape is (num_entities, feature_dim)
+        orig_shape = env.orig_shape
+        self.num_entities = orig_shape[0]
+        self.feature_dim = orig_shape[1]
+        self.obs_flat_dim = self.num_entities * self.feature_dim
+
+        self.observation_space = Box(
+            low=-1e3,
+            high=1e3,
+            shape=(self.obs_flat_dim,),
+            dtype=np.float32,
+        )
+
+    def observation(self, obs: np.ndarray) -> np.ndarray:
+        """
+        obs : flat array produced by DelayWrapper in mode='all'
+              layout: [obs_flat (N*F) | action_hist | delay_scalar]
+
+        Each neighbour entry is [rel_x, rel_y, rel_vel] relative to ego.
+        Prediction: rel_x_pred = rel_x + rel_vel * delay * dt
+                    rel_y, rel_vel assumed constant.
+        """
+        obs = np.asarray(obs, dtype=np.float32)
+        delay_steps = float(obs[-1])
+        dt_total = delay_steps * self.dt
+
+        state = obs[: self.obs_flat_dim].reshape(self.num_entities, self.feature_dim).copy()
+
+        # Neighbours only — ego row (0) is already current
+        if dt_total > 0:
+            for i in range(1, self.num_entities):
+                rel_x, rel_y, rel_vel = state[i]
+                state[i, 0] = rel_x + rel_vel * dt_total
+
+        return state.flatten()

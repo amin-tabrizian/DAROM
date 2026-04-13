@@ -2,7 +2,7 @@ from stable_baselines3 import SAC
 from src.merging import Merging
 import numpy as np
 import gymnasium as gym
-from src.wrapper import DelayWrapper
+from src.wrapper import DelayWrapper, PhysicsPredictorWrapper
 from src.safety_controller import safetyCheck
 from src.merging import Merging
 from src.utils import get_user_action
@@ -16,14 +16,18 @@ model_path = sys.argv[1] if len(sys.argv) > 1 else os.getenv('MODEL_PATH', "mode
 use_safety = os.getenv('USE_SAFETY', 'True').lower() == 'true'
 # Get delay mode from environment variable, default to 'all'
 delay_mode = os.getenv('DELAY_MODE', 'bursty')
+# Get use_predictor from environment variable, default to False
+use_predictor = os.getenv('USE_PREDICTOR', 'False').lower() == 'true'
 
 
 max_delay = 20
 env = DelayWrapper(Merging(seed=42, render_mode='none'), max_delay=max_delay, mode='all', delay_mode=delay_mode)
+if use_predictor:
+    env = PhysicsPredictorWrapper(env)
 # env = Merging(seed=42, render_mode='none')
 # model_path = "EasyGRU/EasyGRU"
 model = SAC.load(model_path, env=env)
-print('Model loaded from ', model_path, 'Safe mode: ', use_safety, 'Delay mode: ', delay_mode)
+print('Model loaded from ', model_path, 'Safe mode: ', use_safety, 'Delay mode: ', delay_mode, 'Predictor: ', use_predictor)
 
 episode_reward = 0.0
 step = 0

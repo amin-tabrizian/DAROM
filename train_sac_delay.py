@@ -18,7 +18,7 @@ import wandb
 from wandb.integration.sb3 import WandbCallback
 
 from src.merging import Merging
-from src.wrapper import DelayWrapper
+from src.wrapper import DelayWrapper, PhysicsPredictorWrapper
 
 class EpisodeRewardCallback(BaseCallback):
     def __init__(self, verbose=0):
@@ -177,6 +177,7 @@ def parse_args():
     parser.add_argument('--load_path', type=str, default=None)
     parser.add_argument('--wandb_mode', type=str, default='online', choices=['online', 'offline', 'disabled'])
     parser.add_argument('--encoder_mode', type=str, default='None', choices=['Transformer', 'GRU', 'MLP', 'None'])
+    parser.add_argument('--use_predictor', action='store_true', help='Wrap env with PhysicsPredictorWrapper')
     parser.add_argument('--delay_mode', type=str, default='uniform', choices=['uniform', 'exponential', 'triangular', 'bursty', 'bimodal'])
     return parser.parse_args()
 
@@ -208,19 +209,27 @@ def main():
     # Create env
     max_delay = 20
     def _fn():
-        return (DelayWrapper(Merging(seed=args.seed, render_mode=args.render_mode), max_delay=max_delay, mode='all', delay_mode=args.delay_mode))
+        env = DelayWrapper(Merging(seed=args.seed, render_mode=args.render_mode), max_delay=max_delay, mode='all', delay_mode=args.delay_mode)
+        if args.use_predictor:
+            env = PhysicsPredictorWrapper(env)
+        return env
 
     # Define evaluation environment function
     def make_eval_env():
         # Use separate seed for eval to avoid stochasticity coupling with train
-        return (DelayWrapper(Merging(seed=args.seed + 42, render_mode=None), max_delay=max_delay, mode='all', delay_mode=args.delay_mode))
+        env = DelayWrapper(Merging(seed=args.seed + 42, render_mode=None), max_delay=max_delay, mode='all', delay_mode=args.delay_mode)
+        if args.use_predictor:
+            env = PhysicsPredictorWrapper(env)
+        return env
 
     # SB3 expects the Gym API; our env already implements gymnasium API. SB3 v2 works with gymnasium.
     vec_env = DummyVecEnv([_fn])
 
     wrapped_env = vec_env.envs[0]
-    entity_seq_len, entity_feat_dim = wrapped_env.orig_shape
-    act_dim = wrapped_env.env.action_space.shape[0]
+    # When PhysicsPredictorWrapper is active, the DelayWrapper sits one level below
+    delay_env = wrapped_env.env if args.use_predictor else wrapped_env
+    entity_seq_len, entity_feat_dim = delay_env.orig_shape
+    act_dim = delay_env.env.action_space.shape[0]
     encoder_mode = args.encoder_mode
     if encoder_mode == 'Transformer':
         policy_kwargs = dict(
@@ -228,7 +237,7 @@ def main():
         features_extractor_kwargs=dict(
             entity_seq_len=entity_seq_len,
             entity_feat_dim=entity_feat_dim,
-            act_hist_len=wrapped_env.max_delay,
+            act_hist_len=delay_env.max_delay,
             act_dim=act_dim,
             delay_dim=1,
             d_model=32,
@@ -240,11 +249,11 @@ def main():
         net_arch=[256, 256],      # actor/critic MLP after transformer
     )
     elif encoder_mode == 'GRU':
-        policy_kwargs = dict(features_extractor_class=DelayAwareGRUEncoder, features_extractor_kwargs=dict(act_dim=act_dim, hist_len=wrapped_env.max_delay+1, delay_dim=1, features_dim=128, gru_hidden=64))
+        policy_kwargs = dict(features_extractor_class=DelayAwareGRUEncoder, features_extractor_kwargs=dict(act_dim=act_dim, hist_len=delay_env.max_delay+1, delay_dim=1, features_dim=128, gru_hidden=64))
     elif encoder_mode == 'MLP':
         policy_kwargs = dict(
         features_extractor_class=DelayAwareEncoder,
-        features_extractor_kwargs=dict(act_hist_dim=max_delay * vec_env.envs[0].action_space.shape[0], delay_dim=1)
+        features_extractor_kwargs=dict(act_hist_dim=max_delay * act_dim, delay_dim=1)
         )
     else:
         policy_kwargs = dict()
