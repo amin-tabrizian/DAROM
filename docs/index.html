@@ -184,7 +184,7 @@
 
     <!-- Figure 3: Augmented State -->
     <div class="figure-block" style="margin-top: 2.5rem;">
-      <figure class="image" style="max-width: 55%; margin: 0 auto;">
+      <figure class="image" style="max-width: 41%; margin: 0 auto;">
         <img src="static/images/figure_3.png" alt="Augmented State Construction" />
       </figure>
       <p class="figure-caption">
@@ -248,10 +248,10 @@
     </div>
 
     <!-- Main results table -->
-    <h3 class="title is-5 has-text-centered" style="margin-bottom: 1rem;">Comparative Performance</h3>
-    <p class="is-size-7 has-text-centered" style="margin-bottom: 0.75rem; color:#666;">
-      Results averaged over 500 evaluation episodes × 3 seeds. Bold = best per difficulty.
-      SC = safety controller.
+    <p class="figure-caption" style="margin-bottom: 0.85rem;">
+      <strong>Table 1.</strong> Comparative performance analysis of DAROM framework variants
+      and baselines across Easy, Medium, and Hard traffic scenarios. Results averaged over
+      500 evaluation episodes × 3 seeds. Bold = best per difficulty. SC = safety controller.
     </p>
     <div class="table-container" style="overflow-x: auto; margin-bottom: 2.5rem;">
       <table class="table is-bordered is-hoverable result-table" style="min-width: 820px; margin: 0 auto;">
@@ -322,7 +322,11 @@
     </div>
 
     <!-- Ablation table -->
-    <h3 class="title is-5 has-text-centered" style="margin-bottom: 1rem;">Ablation Study — Hard Mode</h3>
+    <p class="figure-caption" style="margin-bottom: 0.85rem;">
+      <strong>Table 2.</strong> Ablation study (Hard mode). Comparing the full DAROM-GRU
+      against variants lacking specific augmented-state components and the Linear State
+      Predictor baseline.
+    </p>
     <div class="table-container" style="overflow-x: auto; margin-bottom: 2.5rem;">
       <table class="table is-bordered is-hoverable result-table" style="min-width: 600px; margin: 0 auto;">
         <thead>
@@ -345,9 +349,10 @@
     </div>
 
     <!-- Delay profiles table -->
-    <h3 class="title is-5 has-text-centered" style="margin-bottom: 1rem;">Generalization Across Delay Distributions</h3>
-    <p class="is-size-7 has-text-centered" style="margin-bottom: 0.75rem; color:#666;">
-      DAROM-GRU trained on Uniform only, evaluated across all five distributions (Hard mode).
+    <p class="figure-caption" style="margin-bottom: 0.85rem;">
+      <strong>Table 3.</strong> Performance comparison across delay profiles (Hard mode).
+      DAROM-GRU is trained under the Uniform distribution only and evaluated across
+      all five stochastic delay distributions without retraining.
     </p>
     <div class="table-container" style="overflow-x: auto; margin-bottom: 1rem;">
       <table class="table is-bordered is-hoverable result-table" style="min-width: 540px; margin: 0 auto;">
