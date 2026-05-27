@@ -106,10 +106,12 @@
         onboard sensors alone cannot, particularly in complex maneuvers like highway on-ramp merging.
       </p>
       <p>
-        However, real-world V2I links are not instantaneous. Network congestion, edge-computing
-        overload, and packet retransmission can introduce <strong>stochastic delays of up to 2 seconds</strong>.
-        A control policy trained on fresh observations will receive stale data at runtime — and
-        acting on outdated information in dense, high-speed traffic can be catastrophic.
+        However, real-world V2I links are not instantaneous. Under nominal conditions,
+        RSU perception-to-vehicle delivery typically falls within <strong>~100 ms</strong>.
+        But edge-computing overload, packet retransmission under congestion, and multi-hop
+        relaying can push latency far higher. A control policy trained on fresh observations
+        will receive stale data at runtime — and acting on outdated information in dense,
+        high-speed traffic can be catastrophic.
       </p>
       <p>
         Existing deep RL methods for merging simply ignore this latency, while classical MPC
