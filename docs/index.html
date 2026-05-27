@@ -188,12 +188,11 @@
         <img src="static/images/figure_3.png" alt="Augmented State Construction" />
       </figure>
       <p class="figure-caption">
-        <strong>Figure 2.</strong> Augmented state construction. The ego vehicle's
-        onboard state is always available without delay. The RSU perception pipeline
-        introduces a stochastic delay ω<sub>t</sub> before the surrounding-vehicle
-        observation o<sub>t</sub> reaches the agent. The safety controller operates
-        directly on the undelayed ego state, while the Delay-Aware Encoder processes
-        the full augmented state to infer the current latent traffic context.
+        <strong>Figure 2.</strong> Augmented state construction. The ego state is always
+        delay-free; the RSU observation o<sub>t</sub> arrives with stochastic delay
+        ω<sub>t</sub>. The Delay-Aware Encoder processes the full augmented state
+        x<sub>t</sub> = (o<sub>t</sub>, u<sub>t</sub>, ω<sub>t</sub>) to infer the
+        current traffic context.
       </p>
     </div>
 
