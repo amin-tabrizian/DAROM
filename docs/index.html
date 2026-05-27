@@ -41,8 +41,8 @@
       <div class="is-size-5 publication-authors" style="margin-top: 1rem;">
         <span class="author-block">Amin Tabrizian<sup>1</sup>,&nbsp;</span>
         <span class="author-block">Zhitong Huang<sup>2</sup>,&nbsp;</span>
-        <span class="author-block">Arsyi Aziz<sup>3</sup>,&nbsp;</span>
-        <span class="author-block">Peng Wei<sup>1</sup></span>
+        <span class="author-block">Arsyi Aziz<sup>1</sup>,&nbsp;</span>
+        <span class="author-block">Peng Wei<sup>3</sup></span>
       </div>
 
       <!-- Affiliations -->
@@ -156,7 +156,7 @@
 
     <!-- Figure 2: Framework Architecture -->
     <div class="figure-block">
-      <figure class="image">
+      <figure class="image" style="max-width: 72%; margin: 0 auto;">
         <img src="static/images/figure_2.png" alt="DAROM Framework Architecture" />
       </figure>
       <p class="figure-caption">
@@ -201,31 +201,6 @@
       </p>
     </div>
 
-    <!-- Traffic flow table -->
-    <h3 class="title is-5" style="margin-bottom: 1rem;">Traffic Flow Configuration</h3>
-    <div class="table-container" style="margin-bottom: 2.5rem;">
-      <table class="table is-bordered is-striped is-hoverable is-fullwidth result-table">
-        <thead>
-          <tr>
-            <th>Lane</th>
-            <th>Easy (vph)</th>
-            <th>Medium (vph)</th>
-            <th>Hard (vph)</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr><td>1</td><td>360</td><td>720</td><td>1394</td></tr>
-          <tr><td>2</td><td>360</td><td>684</td><td>1460</td></tr>
-          <tr><td>3</td><td>360</td><td>684</td><td>1390</td></tr>
-          <tr><td>4</td><td>360</td><td>684</td><td>1374</td></tr>
-          <tr><td>5</td><td>360</td><td>684</td><td>1490</td></tr>
-        </tbody>
-        <tfoot>
-          <tr><td colspan="4" style="font-size:0.85rem; color:#666;">vph = vehicles per hour.</td></tr>
-        </tfoot>
-      </table>
-    </div>
-
     <!-- Combined plot figure -->
     <div class="figure-block" style="margin-bottom: 2.5rem;">
       <figure class="image">
@@ -240,53 +215,59 @@
     </div>
 
     <!-- Main results table -->
-    <h3 class="title is-5" style="margin-bottom: 1rem;">Comparative Performance</h3>
-    <p class="is-size-7" style="margin-bottom: 0.75rem; color:#666;">
+    <h3 class="title is-5 has-text-centered" style="margin-bottom: 1rem;">Comparative Performance</h3>
+    <p class="is-size-7 has-text-centered" style="margin-bottom: 0.75rem; color:#666;">
       Results averaged over 500 evaluation episodes × 3 seeds. Bold = best per difficulty.
       SC = safety controller.
     </p>
     <div class="table-container" style="overflow-x: auto; margin-bottom: 2.5rem;">
-      <table class="table is-bordered is-hoverable result-table" style="min-width: 820px;">
+      <table class="table is-bordered is-hoverable result-table" style="min-width: 820px; margin: 0 auto;">
         <thead>
           <tr>
-            <th>Difficulty</th>
+            <th style="width:38px;">Difficulty</th>
             <th>Method</th>
             <th>Success Rate (%)</th>
             <th>Collision Rate (%)</th>
             <th>No Merge Rate (%)</th>
             <th>Avg. Return</th>
             <th>Avg. Ego Vel.</th>
-            <th>Avg. Jerk</th>
+            <th class="jerk-col">Avg. Jerk</th>
           </tr>
         </thead>
         <tbody>
-          <!-- Easy -->
-          <tr class="difficulty-header"><td colspan="8"><strong>Easy</strong></td></tr>
-          <tr><td></td><td>MPC</td><td>83.37 ± 3.07</td><td>16.30 ± 3.40</td><td>0.33 ± 0.35</td><td>—</td><td>19.25 ± 0.04</td><td>−0.39 ± 0.04</td></tr>
-          <tr><td></td><td>DRL-ORMOC</td><td>96.61 ± 0.90</td><td>3.39 ± 0.90</td><td><strong>0.00 ± 0.00</strong></td><td>143.58 ± 0.58</td><td>27.94 ± 0.08</td><td>−0.18 ± 0.01</td></tr>
-          <tr><td></td><td>No Encoder</td><td>98.00 ± 0.39</td><td>0.53 ± 0.26</td><td>1.46 ± 0.35</td><td>155.81 ± 1.23</td><td>28.82 ± 0.06</td><td>−0.23 ± 0.01</td></tr>
-          <tr class="best-row"><td></td><td><strong>DAROM-MLP</strong></td><td><strong>99.60 ± 0.00</strong></td><td><strong>0.20 ± 0.00</strong></td><td>0.20 ± 0.00</td><td>172.11 ± 0.57</td><td><strong>29.42 ± 0.02</strong></td><td>−0.30 ± 0.01</td></tr>
-          <tr><td></td><td>DAROM-GRU w/o SC</td><td>91.68 ± 1.36</td><td>8.18 ± 1.48</td><td>0.13 ± 0.13</td><td>159.16 ± 3.38</td><td>28.82 ± 0.13</td><td><strong>−0.08 ± 0.01</strong></td></tr>
-          <tr><td></td><td>DAROM-GRU</td><td>98.74 ± 0.26</td><td>0.40 ± 0.23</td><td>0.13 ± 0.26</td><td><strong>173.94 ± 0.61</strong></td><td>29.31 ± 0.06</td><td>−0.27 ± 0.01</td></tr>
-          <tr><td></td><td>DAROM-Transformer</td><td>82.83 ± 0.98</td><td>0.40 ± 0.45</td><td>16.77 ± 1.37</td><td>127.50 ± 2.79</td><td>28.78 ± 0.05</td><td>−0.25 ± 0.01</td></tr>
-          <!-- Medium -->
-          <tr class="difficulty-header"><td colspan="8"><strong>Medium</strong></td></tr>
-          <tr><td></td><td>MPC</td><td>83.63 ± 0.81</td><td>16.30 ± 0.86</td><td>0.07 ± 0.13</td><td>—</td><td>19.23 ± 0.04</td><td>−0.35 ± 0.02</td></tr>
-          <tr><td></td><td>DRL-ORMOC</td><td>94.88 ± 1.28</td><td>4.99 ± 1.04</td><td>0.13 ± 0.26</td><td>142.03 ± 0.74</td><td>27.83 ± 0.09</td><td><strong>−0.19 ± 0.01</strong></td></tr>
-          <tr><td></td><td>No Encoder</td><td>99.07 ± 0.52</td><td>0.13 ± 0.26</td><td>0.80 ± 0.45</td><td>164.57 ± 0.83</td><td>29.37 ± 0.03</td><td>−0.26 ± 0.01</td></tr>
-          <tr><td></td><td>DAROM-MLP</td><td>69.59 ± 1.24</td><td>0.60 ± 0.23</td><td>29.81 ± 1.16</td><td>96.05 ± 2.61</td><td>27.79 ± 0.10</td><td>−0.25 ± 0.01</td></tr>
-          <tr><td></td><td>DAROM-GRU w/o SC</td><td>85.16 ± 1.63</td><td>14.84 ± 1.63</td><td><strong>0.00 ± 0.00</strong></td><td>142.15 ± 4.46</td><td>28.19 ± 0.17</td><td>−0.25 ± 0.02</td></tr>
-          <tr class="best-row"><td></td><td><strong>DAROM-GRU</strong></td><td><strong>99.87 ± 0.13</strong></td><td><strong>0.00 ± 0.00</strong></td><td>0.13 ± 0.13</td><td><strong>178.57 ± 0.32</strong></td><td><strong>29.57 ± 0.00</strong></td><td>−0.36 ± 0.01</td></tr>
-          <tr><td></td><td>DAROM-Transformer</td><td>84.36 ± 1.84</td><td>0.20 ± 0.00</td><td>15.44 ± 1.84</td><td>134.72 ± 4.64</td><td>28.71 ± 0.08</td><td>−0.28 ± 0.01</td></tr>
-          <!-- Hard -->
-          <tr class="difficulty-header"><td colspan="8"><strong>Hard</strong></td></tr>
-          <tr><td></td><td>MPC</td><td>83.10 ± 1.47</td><td>16.70 ± 1.47</td><td>0.20 ± 0.00</td><td>—</td><td>19.24 ± 0.04</td><td>−0.38 ± 0.04</td></tr>
-          <tr><td></td><td>DRL-ORMOC</td><td>90.09 ± 0.86</td><td>9.78 ± 0.81</td><td>0.13 ± 0.13</td><td>138.90 ± 0.20</td><td>27.33 ± 0.14</td><td>−0.21 ± 0.03</td></tr>
-          <tr><td></td><td>No Encoder</td><td>97.41 ± 0.68</td><td>0.13 ± 0.13</td><td>2.46 ± 0.57</td><td>161.15 ± 2.08</td><td>28.96 ± 0.07</td><td>−0.24 ± 0.01</td></tr>
-          <tr><td></td><td>DAROM-MLP</td><td>0.00 ± 0.00</td><td>0.00 ± 0.00</td><td>0.00 ± 0.00</td><td>−196.62 ± 0.27</td><td>0.14 ± 0.00</td><td><strong>0.01 ± 0.00</strong></td></tr>
-          <tr><td></td><td>DAROM-GRU w/o SC</td><td>97.60 ± 0.23</td><td>2.40 ± 0.23</td><td><strong>0.00 ± 0.00</strong></td><td>174.26 ± 0.63</td><td>29.35 ± 0.06</td><td>−0.02 ± 0.01</td></tr>
-          <tr class="best-row"><td></td><td><strong>DAROM-GRU</strong></td><td><strong>99.80 ± 0.23</strong></td><td><strong>0.00 ± 0.00</strong></td><td>0.20 ± 0.23</td><td><strong>179.68 ± 0.51</strong></td><td><strong>29.53 ± 0.00</strong></td><td>−0.02 ± 0.00</td></tr>
-          <tr><td></td><td>DAROM-Transformer</td><td>92.08 ± 1.28</td><td>0.07 ± 0.13</td><td>7.85 ± 1.16</td><td>158.01 ± 2.77</td><td>29.35 ± 0.03</td><td>−0.37 ± 0.01</td></tr>
+          <!-- Easy (7 rows) -->
+          <tr>
+            <td rowspan="7" class="difficulty-cell">Easy</td>
+            <td>MPC</td><td>83.37 ± 3.07</td><td>16.30 ± 3.40</td><td>0.33 ± 0.35</td><td>—</td><td>19.25 ± 0.04</td><td>−0.39 ± 0.04</td>
+          </tr>
+          <tr><td>DRL-ORMOC</td><td>96.61 ± 0.90</td><td>3.39 ± 0.90</td><td><strong>0.00 ± 0.00</strong></td><td>143.58 ± 0.58</td><td>27.94 ± 0.08</td><td>−0.18 ± 0.01</td></tr>
+          <tr><td>No Encoder</td><td>98.00 ± 0.39</td><td>0.53 ± 0.26</td><td>1.46 ± 0.35</td><td>155.81 ± 1.23</td><td>28.82 ± 0.06</td><td>−0.23 ± 0.01</td></tr>
+          <tr class="best-row"><td><strong>DAROM-MLP</strong></td><td><strong>99.60 ± 0.00</strong></td><td><strong>0.20 ± 0.00</strong></td><td>0.20 ± 0.00</td><td>172.11 ± 0.57</td><td><strong>29.42 ± 0.02</strong></td><td>−0.30 ± 0.01</td></tr>
+          <tr><td>DAROM-GRU w/o SC</td><td>91.68 ± 1.36</td><td>8.18 ± 1.48</td><td>0.13 ± 0.13</td><td>159.16 ± 3.38</td><td>28.82 ± 0.13</td><td><strong>−0.08 ± 0.01</strong></td></tr>
+          <tr><td>DAROM-GRU</td><td>98.74 ± 0.26</td><td>0.40 ± 0.23</td><td>0.13 ± 0.26</td><td><strong>173.94 ± 0.61</strong></td><td>29.31 ± 0.06</td><td>−0.27 ± 0.01</td></tr>
+          <tr><td>DAROM-Transformer</td><td>82.83 ± 0.98</td><td>0.40 ± 0.45</td><td>16.77 ± 1.37</td><td>127.50 ± 2.79</td><td>28.78 ± 0.05</td><td>−0.25 ± 0.01</td></tr>
+          <!-- Medium (7 rows) -->
+          <tr>
+            <td rowspan="7" class="difficulty-cell">Medium</td>
+            <td>MPC</td><td>83.63 ± 0.81</td><td>16.30 ± 0.86</td><td>0.07 ± 0.13</td><td>—</td><td>19.23 ± 0.04</td><td>−0.35 ± 0.02</td>
+          </tr>
+          <tr><td>DRL-ORMOC</td><td>94.88 ± 1.28</td><td>4.99 ± 1.04</td><td>0.13 ± 0.26</td><td>142.03 ± 0.74</td><td>27.83 ± 0.09</td><td><strong>−0.19 ± 0.01</strong></td></tr>
+          <tr><td>No Encoder</td><td>99.07 ± 0.52</td><td>0.13 ± 0.26</td><td>0.80 ± 0.45</td><td>164.57 ± 0.83</td><td>29.37 ± 0.03</td><td>−0.26 ± 0.01</td></tr>
+          <tr><td>DAROM-MLP</td><td>69.59 ± 1.24</td><td>0.60 ± 0.23</td><td>29.81 ± 1.16</td><td>96.05 ± 2.61</td><td>27.79 ± 0.10</td><td>−0.25 ± 0.01</td></tr>
+          <tr><td>DAROM-GRU w/o SC</td><td>85.16 ± 1.63</td><td>14.84 ± 1.63</td><td><strong>0.00 ± 0.00</strong></td><td>142.15 ± 4.46</td><td>28.19 ± 0.17</td><td>−0.25 ± 0.02</td></tr>
+          <tr class="best-row"><td><strong>DAROM-GRU</strong></td><td><strong>99.87 ± 0.13</strong></td><td><strong>0.00 ± 0.00</strong></td><td>0.13 ± 0.13</td><td><strong>178.57 ± 0.32</strong></td><td><strong>29.57 ± 0.00</strong></td><td>−0.36 ± 0.01</td></tr>
+          <tr><td>DAROM-Transformer</td><td>84.36 ± 1.84</td><td>0.20 ± 0.00</td><td>15.44 ± 1.84</td><td>134.72 ± 4.64</td><td>28.71 ± 0.08</td><td>−0.28 ± 0.01</td></tr>
+          <!-- Hard (7 rows) -->
+          <tr>
+            <td rowspan="7" class="difficulty-cell">Hard</td>
+            <td>MPC</td><td>83.10 ± 1.47</td><td>16.70 ± 1.47</td><td>0.20 ± 0.00</td><td>—</td><td>19.24 ± 0.04</td><td>−0.38 ± 0.04</td>
+          </tr>
+          <tr><td>DRL-ORMOC</td><td>90.09 ± 0.86</td><td>9.78 ± 0.81</td><td>0.13 ± 0.13</td><td>138.90 ± 0.20</td><td>27.33 ± 0.14</td><td>−0.21 ± 0.03</td></tr>
+          <tr><td>No Encoder</td><td>97.41 ± 0.68</td><td>0.13 ± 0.13</td><td>2.46 ± 0.57</td><td>161.15 ± 2.08</td><td>28.96 ± 0.07</td><td>−0.24 ± 0.01</td></tr>
+          <tr><td>DAROM-MLP</td><td>0.00 ± 0.00</td><td>0.00 ± 0.00</td><td>0.00 ± 0.00</td><td>−196.62 ± 0.27</td><td>0.14 ± 0.00</td><td><strong>0.01 ± 0.00</strong></td></tr>
+          <tr><td>DAROM-GRU w/o SC</td><td>97.60 ± 0.23</td><td>2.40 ± 0.23</td><td><strong>0.00 ± 0.00</strong></td><td>174.26 ± 0.63</td><td>29.35 ± 0.06</td><td>−0.02 ± 0.01</td></tr>
+          <tr class="best-row"><td><strong>DAROM-GRU</strong></td><td><strong>99.80 ± 0.23</strong></td><td><strong>0.00 ± 0.00</strong></td><td>0.20 ± 0.23</td><td><strong>179.68 ± 0.51</strong></td><td><strong>29.53 ± 0.00</strong></td><td>−0.02 ± 0.00</td></tr>
+          <tr><td>DAROM-Transformer</td><td>92.08 ± 1.28</td><td>0.07 ± 0.13</td><td>7.85 ± 1.16</td><td>158.01 ± 2.77</td><td>29.35 ± 0.03</td><td>−0.37 ± 0.01</td></tr>
         </tbody>
       </table>
     </div>
@@ -305,9 +286,9 @@
     </div>
 
     <!-- Ablation table -->
-    <h3 class="title is-5" style="margin-bottom: 1rem;">Ablation Study — Hard Mode</h3>
+    <h3 class="title is-5 has-text-centered" style="margin-bottom: 1rem;">Ablation Study — Hard Mode</h3>
     <div class="table-container" style="overflow-x: auto; margin-bottom: 2.5rem;">
-      <table class="table is-bordered is-hoverable result-table" style="min-width: 600px;">
+      <table class="table is-bordered is-hoverable result-table" style="min-width: 600px; margin: 0 auto;">
         <thead>
           <tr>
             <th>Ablation Variant</th>
@@ -328,12 +309,12 @@
     </div>
 
     <!-- Delay profiles table -->
-    <h3 class="title is-5" style="margin-bottom: 1rem;">Generalization Across Delay Distributions</h3>
-    <p class="is-size-7" style="margin-bottom: 0.75rem; color:#666;">
+    <h3 class="title is-5 has-text-centered" style="margin-bottom: 1rem;">Generalization Across Delay Distributions</h3>
+    <p class="is-size-7 has-text-centered" style="margin-bottom: 0.75rem; color:#666;">
       DAROM-GRU trained on Uniform only, evaluated across all five distributions (Hard mode).
     </p>
     <div class="table-container" style="overflow-x: auto; margin-bottom: 1rem;">
-      <table class="table is-bordered is-hoverable result-table" style="min-width: 540px;">
+      <table class="table is-bordered is-hoverable result-table" style="min-width: 540px; margin: 0 auto;">
         <thead>
           <tr>
             <th>Delay Profile</th>
