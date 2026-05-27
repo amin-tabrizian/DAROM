@@ -53,9 +53,25 @@ h1, h2, h3, h4, h5, .title {
 .demo-placeholder {
   border: 2px dashed #3273dc;
   border-radius: 12px;
-  padding: 2.5rem 2rem;
+  padding: 2rem 2rem;
   background: #f0f5ff;
   color: #3273dc;
+  line-height: 1.8;
+}
+
+.demo-placeholder .title {
+  line-height: 1.8;
+  margin-bottom: 0.3rem !important;
+}
+
+.demo-placeholder .subtitle {
+  line-height: 1.8;
+  margin-bottom: 0.3rem !important;
+}
+
+.demo-placeholder p {
+  line-height: 1.8;
+  margin-bottom: 0 !important;
 }
 
 /* ─────────────────────────────────────────────
