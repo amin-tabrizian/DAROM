@@ -167,32 +167,38 @@
       </ul>
     </div>
 
-    <!-- Figure 2: Framework Architecture -->
+    <!-- Figure 1: Framework Architecture -->
     <div class="figure-block">
       <figure class="image" style="max-width: 88%; margin: 0 auto;">
         <img src="static/images/figure_2.png" alt="DAROM Framework Architecture" />
       </figure>
-      <p class="figure-caption">
-        <strong>Figure 1.</strong> DAROM framework overview. The augmented state
-        x<sub>t</sub> = (o<sub>t</sub>, u<sub>t</sub>, ω<sub>t</sub>) — comprising the
-        delayed RSU observation, the masked action history, and the delay magnitude — is
-        fed into the Delay-Aware Encoder, which produces a latent state representation.
-        This latent state drives separate lane-changing and lane-keeping SAC agents,
-        each with independent actor and critic networks.
+      <p class="figure-caption"><strong>Figure 1.</strong> DAROM framework architecture.</p>
+    </div>
+    <div class="content has-text-justified" style="margin-top: 1rem; margin-bottom: 2rem;">
+      <p>
+        As shown in Figure 1, the augmented state x<sub>t</sub> = (o<sub>t</sub>, u<sub>t</sub>, ω<sub>t</sub>)
+        is processed by the Delay-Aware Encoder to produce a compact latent representation.
+        This latent state is passed to separate lane-changing and lane-keeping SAC agents,
+        each with independent actor and critic networks that output the final control actions.
       </p>
     </div>
 
-    <!-- Figure 3: Augmented State -->
-    <div class="figure-block" style="margin-top: 2.5rem;">
+    <!-- Figure 2: Augmented State -->
+    <div class="figure-block" style="margin-top: 1rem;">
       <figure class="image" style="max-width: 41%; margin: 0 auto;">
         <img src="static/images/figure_3.png" alt="Augmented State Construction" />
       </figure>
-      <p class="figure-caption">
-        <strong>Figure 2.</strong> Augmented state construction. The ego state is always
-        delay-free; the RSU observation o<sub>t</sub> arrives with stochastic delay
-        ω<sub>t</sub>. The Delay-Aware Encoder processes the full augmented state
-        x<sub>t</sub> = (o<sub>t</sub>, u<sub>t</sub>, ω<sub>t</sub>) to infer the
-        current traffic context.
+      <p class="figure-caption"><strong>Figure 2.</strong> Augmented state construction.</p>
+    </div>
+    <div class="content has-text-justified" style="margin-top: 1rem;">
+      <p>
+        Figure 2 illustrates how the augmented state is assembled at each time step.
+        The ego vehicle's onboard state is always available without delay, while the
+        surrounding-vehicle observation o<sub>t</sub> from the RSU arrives subject to
+        stochastic delay ω<sub>t</sub>. The masked action history u<sub>t</sub> records
+        the actions taken during the delay window. Together, (o<sub>t</sub>, u<sub>t</sub>, ω<sub>t</sub>)
+        form the input to the Delay-Aware Encoder, recovering the Markov property
+        despite the variable latency.
       </p>
     </div>
 
@@ -232,18 +238,22 @@
     </div>
 
     <!-- Combined plot figure -->
-    <div class="figure-block" style="margin-bottom: 2.5rem;">
+    <div class="figure-block" style="margin-bottom: 1rem;">
       <figure class="image">
         <img src="static/images/combined_plot.png" alt="Training curves across Easy, Medium, Hard modes" />
       </figure>
-      <p class="figure-caption">
-        <strong>Figure 3.</strong> Overall comparison across Easy, Medium, and Hard modes.
-        The GRU encoder captures temporal dependencies in the action history through
-        recurrent hidden states; the MLP encoder treats the action buffer as a flat
-        vector and ignores temporal order; the Transformer encoder uses self-attention
-        over entity tokens to model inter-vehicle interactions. Rows correspond to
-        average return, critic loss, and actor loss, respectively. DAROM-GRU converges
-        steadily across all modes, while DAROM-MLP collapses entirely in Hard mode.
+      <p class="figure-caption"><strong>Figure 3.</strong> Training dynamics across Easy, Medium, and Hard modes.</p>
+    </div>
+    <div class="content has-text-justified" style="margin-bottom: 2rem;">
+      <p>
+        Figure 3 summarizes the training dynamics for all encoder variants and baselines.
+        DAROM-GRU exhibits a steady increase in average return followed by a stable plateau,
+        while critic and actor losses decrease and stabilize, indicating convergence.
+        The GRU encoder captures temporal dependencies in the action history through recurrent
+        hidden states; the MLP encoder treats the action buffer as a flat vector and ignores
+        temporal order; the Transformer encoder uses self-attention over entity tokens.
+        Weaker baselines show noisier learning curves and less consistent improvement, and
+        DAROM-MLP fails to converge entirely in Hard mode.
       </p>
     </div>
 
@@ -306,18 +316,21 @@
     </div>
 
     <!-- Ablation figure -->
-    <div class="figure-block" style="margin-bottom: 2.5rem;">
+    <div class="figure-block" style="margin-bottom: 1rem;">
       <figure class="image" style="max-width: 600px; margin: 0 auto;">
         <img src="static/images/figure_5.png" alt="Ablation study in Hard mode" />
       </figure>
-      <p class="figure-caption">
-        <strong>Figure 4.</strong> Ablation study in Hard mode. Comparing the full
-        DAROM-GRU architecture against variants with ablated augmented-state components:
-        delayed state only, delayed state with delay magnitude, delayed state with action
-        buffer, and the Linear State Predictor baseline (which propagates surrounding
-        vehicle positions forward under constant velocity). Two ablated variants fail to
-        converge entirely; the Linear State Predictor reaches a suboptimal policy with
-        residual collisions; only the full augmented state achieves near-perfect performance.
+      <p class="figure-caption"><strong>Figure 4.</strong> Ablation study in Hard mode.</p>
+    </div>
+    <div class="content has-text-justified" style="margin-bottom: 2rem;">
+      <p>
+        Figure 4 highlights the necessity of the full augmented state. Variants using only
+        the delayed state with delay magnitude, or only the delayed state with action buffer,
+        both yield 0% success — demonstrating that the agent can only recover the latent
+        state when it processes <em>both</em> u<sub>t</sub> and ω<sub>t</sub> jointly.
+        The Linear State Predictor, which propagates surrounding vehicle positions forward
+        under constant velocity, converges to a suboptimal policy with residual collisions.
+        Only the full DAROM-GRU with all three components achieves near-perfect performance.
       </p>
     </div>
 
