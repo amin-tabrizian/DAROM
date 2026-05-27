@@ -134,50 +134,66 @@
     <div class="content has-text-justified" style="margin-bottom: 2rem;">
       <p>
         We introduce <strong>DAROM</strong> (Delay-Aware Reinforcement learning for On-ramp Merging),
-        a framework that turns the latency problem into a tractable learning signal.
-        Three components work together:
+        a framework that recasts the latency problem as a
+        <strong>Random Delay Markov Decision Process (RMDMP)</strong>. Instead of receiving
+        the current environment state, the agent observes a delayed version o<sub>t</sub>
+        alongside its own action history u<sub>t</sub> and the received delay magnitude
+        ω<sub>t</sub>. Together these form the <em>augmented state</em> x<sub>t</sub> = (o<sub>t</sub>, u<sub>t</sub>, ω<sub>t</sub>),
+        which recovers the Markov property despite stochastic latency.
+      </p>
+      <p>
+        Three components work together to solve the RMDMP:
       </p>
       <ul>
         <li>
-          <strong>Delay-Aware Encoder:</strong> A GRU-based network that jointly processes
-          the delayed observation, the agent's action history, and the current delay magnitude —
-          reconstructing a latent representation of the <em>true</em> current state.
+          <strong>Delay-Aware Encoder:</strong> Processes the augmented state through a
+          GRU-based architecture. The GRU captures temporal dependencies in the action
+          history — allowing the encoder to infer what the true current traffic state
+          likely is, even when the received observation is seconds old.
         </li>
         <li>
-          <strong>Safety Controller:</strong> A physics-based supervisory layer that overrides
-          unsafe actions in real time, eliminating tail-end collision risk even when the policy
-          receives worst-case delayed inputs.
+          <strong>Physics-Based Safety Controller:</strong> A supervisory layer that
+          overrides unsafe actions using kinematic constraints derived from the ego
+          vehicle's onboard sensors, which are always delay-free. This eliminates
+          tail-end collision risk regardless of how stale the RSU observation is.
         </li>
         <li>
-          <strong>Unified RL Agent:</strong> A Soft Actor-Critic agent that simultaneously
-          decides longitudinal acceleration and lateral lane-change actions, trained entirely
-          under the uniform delay distribution.
+          <strong>Unified SAC Agent:</strong> A Soft Actor-Critic agent trained on the
+          latent state produced by the encoder. It simultaneously outputs a continuous
+          longitudinal acceleration and a discrete lateral lane-change decision,
+          trained entirely under the uniform delay distribution yet generalizing
+          across all tested delay profiles.
         </li>
       </ul>
     </div>
 
     <!-- Figure 2: Framework Architecture -->
     <div class="figure-block">
-      <figure class="image" style="max-width: 72%; margin: 0 auto;">
+      <figure class="image" style="max-width: 58%; margin: 0 auto;">
         <img src="static/images/figure_2.png" alt="DAROM Framework Architecture" />
       </figure>
       <p class="figure-caption">
-        <strong>Figure 1.</strong> Overall DAROM architecture. The Delay-Aware Encoder
-        (left) processes the delayed observation, action buffer, and delay magnitude to
-        produce a latent state fed into the lane-changing and lane-keeping SAC agents (right).
+        <strong>Figure 1.</strong> DAROM framework overview. The augmented state
+        x<sub>t</sub> = (o<sub>t</sub>, u<sub>t</sub>, ω<sub>t</sub>) — comprising the
+        delayed RSU observation, the masked action history, and the delay magnitude — is
+        fed into the Delay-Aware Encoder, which produces a latent state representation.
+        This latent state drives separate lane-changing and lane-keeping SAC agents,
+        each with independent actor and critic networks.
       </p>
     </div>
 
     <!-- Figure 3: Augmented State -->
     <div class="figure-block" style="margin-top: 2.5rem;">
-      <figure class="image">
+      <figure class="image" style="max-width: 55%; margin: 0 auto;">
         <img src="static/images/figure_3.png" alt="Augmented State Construction" />
       </figure>
       <p class="figure-caption">
         <strong>Figure 2.</strong> Augmented state construction. The ego vehicle's
-        onboard state is always current; the RSU observation arrives with delay ω<sub>t</sub>.
-        Together with the masked action history, these form the full input to the
-        Delay-Aware Encoder.
+        onboard state is always available without delay. The RSU perception pipeline
+        introduces a stochastic delay ω<sub>t</sub> before the surrounding-vehicle
+        observation o<sub>t</sub> reaches the agent. The safety controller operates
+        directly on the undelayed ego state, while the Delay-Aware Encoder processes
+        the full augmented state to infer the current latent traffic context.
       </p>
     </div>
 
@@ -195,11 +211,24 @@
 
     <div class="content has-text-justified" style="margin-bottom: 2rem;">
       <p>
-        We evaluated all methods over 500 episodes × 3 random seeds in SUMO, using
-        traffic parameters derived from the NGSIM US-101 dataset. Three traffic density
-        levels stress-test the policy: <strong>Easy</strong> (360 vph/lane),
-        <strong>Medium</strong> (~700 vph/lane), and <strong>Hard</strong> (~1400 vph/lane).
-        All delay experiments use Ω<sub>max</sub> = 2.0 s.
+        All simulations are performed in SUMO, with traffic demand and surrounding vehicle
+        speed profiles extracted from the <strong>NGSIM US Highway 101 dataset</strong> to
+        reflect real-world highway conditions. Surrounding vehicles are modeled with two
+        driver profiles — aggressive (minimum headway 0.1–0.7 s) and cooperative
+        (0.6–0.8 s) — sampled per episode to capture heterogeneous traffic behavior.
+        The RSU delay is modeled as ω<sub>t</sub> ∈ [0, Ω<sub>max</sub>], with
+        Ω<sub>max</sub> = 20 time-steps (2.0 s at Δt = 0.1 s), representing a
+        deliberate worst-case stress test covering edge-computing overload,
+        packet retransmission, and multi-hop relaying scenarios.
+      </p>
+      <p>
+        We compare three DAROM encoder variants (GRU, MLP, Transformer) against
+        a No-Encoder ablation, a receding-horizon <strong>MPC</strong> baseline with
+        delay compensation, and <strong>DRL-ORMOC</strong>, a state-of-the-art deep
+        RL method for on-ramp merging that does not model delays.
+        All DRL agents are trained for 7,000,000 steps with the SAC algorithm
+        (learning rate 3×10<sup>−5</sup>, batch size 512) and evaluated over
+        500 episodes × 3 random seeds across three traffic density modes.
       </p>
     </div>
 
@@ -209,10 +238,13 @@
         <img src="static/images/combined_plot.png" alt="Training curves across Easy, Medium, Hard modes" />
       </figure>
       <p class="figure-caption">
-        <strong>Figure 3.</strong> Training dynamics across Easy, Medium, and Hard modes
-        for GRU, MLP, and Transformer encoders vs. baselines. Rows show average return,
-        critic loss, and actor loss. DAROM-GRU converges consistently across all difficulty
-        levels, while MLP collapses in Hard mode.
+        <strong>Figure 3.</strong> Overall comparison across Easy, Medium, and Hard modes.
+        The GRU encoder captures temporal dependencies in the action history through
+        recurrent hidden states; the MLP encoder treats the action buffer as a flat
+        vector and ignores temporal order; the Transformer encoder uses self-attention
+        over entity tokens to model inter-vehicle interactions. Rows correspond to
+        average return, critic loss, and actor loss, respectively. DAROM-GRU converges
+        steadily across all modes, while DAROM-MLP collapses entirely in Hard mode.
       </p>
     </div>
 
@@ -280,10 +312,13 @@
         <img src="static/images/figure_5.png" alt="Ablation study in Hard mode" />
       </figure>
       <p class="figure-caption">
-        <strong>Figure 4.</strong> Ablation study (Hard mode). The full DAROM-GRU
-        outperforms all partial configurations. Variants missing the action buffer or
-        delay magnitude fail to converge, while the linear state predictor converges
-        to a suboptimal, collision-prone policy.
+        <strong>Figure 4.</strong> Ablation study in Hard mode. Comparing the full
+        DAROM-GRU architecture against variants with ablated augmented-state components:
+        delayed state only, delayed state with delay magnitude, delayed state with action
+        buffer, and the Linear State Predictor baseline (which propagates surrounding
+        vehicle positions forward under constant velocity). Two ablated variants fail to
+        converge entirely; the Linear State Predictor reaches a suboptimal policy with
+        residual collisions; only the full augmented state achieves near-perfect performance.
       </p>
     </div>
 
