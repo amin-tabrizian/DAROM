@@ -1,0 +1,178 @@
+/* ─────────────────────────────────────────────
+   Fonts & Base
+───────────────────────────────────────────── */
+body {
+  font-family: 'Noto Sans', sans-serif;
+  color: #222;
+  background: #fff;
+}
+
+h1, h2, h3, h4, h5, .title {
+  font-family: 'Google Sans', 'Noto Sans', sans-serif;
+}
+
+/* ─────────────────────────────────────────────
+   Hero
+───────────────────────────────────────────── */
+.hero {
+  padding-top: 3.5rem;
+  padding-bottom: 1.5rem;
+}
+
+.publication-title {
+  font-size: 1.9rem !important;
+  line-height: 1.3;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.publication-authors .author-block {
+  display: inline;
+}
+
+/* ─────────────────────────────────────────────
+   Buttons
+───────────────────────────────────────────── */
+.publication-links .button {
+  margin: 0.2rem;
+  font-family: 'Google Sans', sans-serif;
+  font-weight: 600;
+}
+
+.external-link.button.is-dark {
+  background-color: #363636;
+}
+
+.external-link.button.is-dark:hover {
+  background-color: #111;
+}
+
+/* ─────────────────────────────────────────────
+   Demo Placeholder
+───────────────────────────────────────────── */
+.demo-placeholder {
+  border: 2px dashed #3273dc;
+  border-radius: 12px;
+  padding: 2.5rem 2rem;
+  background: #f0f5ff;
+  color: #3273dc;
+}
+
+/* ─────────────────────────────────────────────
+   Section Dividers & Titles
+───────────────────────────────────────────── */
+.section-divider {
+  border: none;
+  border-top: 1px solid #e8e8e8;
+  margin: 0;
+}
+
+.section-title {
+  margin-bottom: 1.75rem;
+}
+
+/* ─────────────────────────────────────────────
+   Motivation text
+───────────────────────────────────────────── */
+.motivation-text p {
+  margin-bottom: 1rem;
+  line-height: 1.8;
+  font-size: 1.05rem;
+}
+
+/* ─────────────────────────────────────────────
+   Figures
+───────────────────────────────────────────── */
+.figure-block {
+  margin-bottom: 2rem;
+}
+
+.figure-block figure img {
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.10);
+  max-width: 100%;
+  display: block;
+  margin: 0 auto;
+}
+
+.figure-caption {
+  margin-top: 0.85rem;
+  font-size: 0.9rem;
+  color: #555;
+  text-align: center;
+  line-height: 1.6;
+  max-width: 680px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ─────────────────────────────────────────────
+   Tables
+───────────────────────────────────────────── */
+.result-table {
+  font-size: 0.88rem;
+  border-collapse: collapse;
+}
+
+.result-table thead th {
+  background-color: #f5f5f5;
+  font-family: 'Google Sans', sans-serif;
+  font-weight: 600;
+  text-align: center;
+  white-space: nowrap;
+  border-bottom: 2px solid #dbdbdb;
+}
+
+.result-table tbody td {
+  text-align: center;
+  vertical-align: middle;
+  padding: 0.45rem 0.65rem;
+}
+
+.result-table tbody td:first-child,
+.result-table tbody td:nth-child(2) {
+  text-align: left;
+}
+
+.difficulty-header td {
+  background-color: #eef3fb;
+  font-weight: 700;
+  color: #363636;
+  letter-spacing: 0.03em;
+}
+
+.best-row td {
+  background-color: #f0fff4;
+}
+
+/* ─────────────────────────────────────────────
+   BibTeX block
+───────────────────────────────────────────── */
+pre {
+  background: #f6f8fa;
+  border: 1px solid #e1e4e8;
+  border-radius: 8px;
+  padding: 1.25rem 1.5rem;
+  font-size: 0.9rem;
+  overflow-x: auto;
+}
+
+pre code {
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  color: #24292e;
+}
+
+/* ─────────────────────────────────────────────
+   Footer
+───────────────────────────────────────────── */
+.footer {
+  padding: 2rem 1.5rem;
+  background: #fafafa;
+  border-top: 1px solid #eee;
+  font-size: 0.88rem;
+  color: #777;
+}
+
+.footer a {
+  color: #3273dc;
+}

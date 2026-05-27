@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DAROM: Delay-Aware RL for On-Ramp Merging</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;600;700&family=Noto+Sans:wght@400;600&display=swap" rel="stylesheet" />
+
+  <!-- Academicons (arXiv icon) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css" />
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <!-- Bulma -->
+  <link rel="stylesheet" href="static/css/bulma.min.css" />
+
+  <!-- Custom styles -->
+  <link rel="stylesheet" href="static/css/index.css" />
+</head>
+
+<body>
+
+<!-- ════════════════════════════════════════════════
+     HERO — Title, Authors, Links
+════════════════════════════════════════════════ -->
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop has-text-centered">
+
+      <h1 class="title is-1 publication-title">
+        Delay-Aware Reinforcement Learning for Highway On-Ramp Merging<br/>
+        under Stochastic Communication Latency
+      </h1>
+
+      <!-- Authors -->
+      <div class="is-size-5 publication-authors" style="margin-top: 1rem;">
+        <span class="author-block">Amin Tabrizian<sup>1</sup>,&nbsp;</span>
+        <span class="author-block">Zhitong Huang<sup>2</sup>,&nbsp;</span>
+        <span class="author-block">Arsyi Aziz<sup>3</sup>,&nbsp;</span>
+        <span class="author-block">Peng Wei<sup>1</sup></span>
+      </div>
+
+      <!-- Affiliations -->
+      <div class="is-size-6 publication-authors" style="margin-top: 0.4rem; color: #555;">
+        <span class="author-block"><sup>1</sup>Department of Computer Science, The George Washington University&nbsp;&nbsp;</span>
+        <span class="author-block"><sup>2</sup>Virginia Department of Transportation&nbsp;&nbsp;</span>
+        <span class="author-block"><sup>3</sup>Department of Mechanical &amp; Aerospace Engineering, The George Washington University</span>
+      </div>
+
+      <!-- Links -->
+      <div class="publication-links" style="margin-top: 1.5rem;">
+        <a href="https://arxiv.org/abs/2403.11852" target="_blank"
+           class="external-link button is-normal is-rounded is-dark">
+          <span class="icon"><i class="ai ai-arxiv"></i></span>
+          <span>arXiv</span>
+        </a>
+        &nbsp;
+        <a href="https://arxiv.org/abs/2403.11852" target="_blank"
+           class="external-link button is-normal is-rounded is-dark">
+          <span class="icon"><i class="fas fa-file-pdf"></i></span>
+          <span>Paper</span>
+        </a>
+        &nbsp;
+        <a href="https://github.com/amin-tabrizian/onRampMerging" target="_blank"
+           class="external-link button is-normal is-rounded is-dark">
+          <span class="icon"><i class="fab fa-github"></i></span>
+          <span>Code</span>
+        </a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════
+     DEMO PLACEHOLDER
+════════════════════════════════════════════════ -->
+<section class="section" style="padding-top: 0;">
+  <div class="container is-max-desktop">
+    <div class="demo-placeholder has-text-centered">
+      <span class="icon is-large" style="font-size: 2rem; margin-bottom: 0.5rem; display: block;">🎬</span>
+      <p class="title is-5" style="margin-bottom: 0.25rem;">Demo Coming Soon</p>
+      <p class="subtitle is-6" style="color: #555;">A live simulation walkthrough is on the way.</p>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider" />
+
+<!-- ════════════════════════════════════════════════
+     MOTIVATION
+════════════════════════════════════════════════ -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered section-title">Why Does This Matter?</h2>
+    <div class="content has-text-justified motivation-text">
+      <p>
+        Autonomous vehicles increasingly rely on <strong>Roadside Units (RSUs)</strong> —
+        smart infrastructure sensors — to perceive the surrounding environment through
+        Vehicle-to-Infrastructure (V2I) communication. This lets a vehicle "see" what its
+        onboard sensors alone cannot, particularly in complex maneuvers like highway on-ramp merging.
+      </p>
+      <p>
+        However, real-world V2I links are not instantaneous. Network congestion, edge-computing
+        overload, and packet retransmission can introduce <strong>stochastic delays of up to 2 seconds</strong>.
+        A control policy trained on fresh observations will receive stale data at runtime — and
+        acting on outdated information in dense, high-speed traffic can be catastrophic.
+      </p>
+      <p>
+        Existing deep RL methods for merging simply ignore this latency, while classical MPC
+        approaches struggle to generalize across varying delay distributions.
+        We ask: <em>can we build a single policy that stays safe and effective no matter how
+        the network misbehaves?</em>
+      </p>
+    </div>
+  </div>
+</section>
+
+<hr class="section-divider" />
+
+<!-- ════════════════════════════════════════════════
+     THE IDEA
+════════════════════════════════════════════════ -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered section-title">The Idea: DAROM</h2>
+    <div class="content has-text-justified" style="margin-bottom: 2rem;">
+      <p>
+        We introduce <strong>DAROM</strong> (Delay-Aware Reinforcement learning for On-ramp Merging),
+        a framework that turns the latency problem into a tractable learning signal.
+        Three components work together:
+      </p>
+      <ul>
+        <li>
+          <strong>Delay-Aware Encoder:</strong> A GRU-based network that jointly processes
+          the delayed observation, the agent's action history, and the current delay magnitude —
+          reconstructing a latent representation of the <em>true</em> current state.
+        </li>
+        <li>
+          <strong>Safety Controller:</strong> A physics-based supervisory layer that overrides
+          unsafe actions in real time, eliminating tail-end collision risk even when the policy
+          receives worst-case delayed inputs.
+        </li>
+        <li>
+          <strong>Unified RL Agent:</strong> A Soft Actor-Critic agent that simultaneously
+          decides longitudinal acceleration and lateral lane-change actions, trained entirely
+          under the uniform delay distribution.
+        </li>
+      </ul>
+    </div>
+
+    <!-- Figure 2: Framework Architecture -->
+    <div class="figure-block">
+      <figure class="image">
+        <img src="static/images/figure_2.png" alt="DAROM Framework Architecture" />
+      </figure>
+      <p class="figure-caption">
+        <strong>Figure 1.</strong> Overall DAROM architecture. The Delay-Aware Encoder
+        (left) processes the delayed observation, action buffer, and delay magnitude to
+        produce a latent state fed into the lane-changing and lane-keeping SAC agents (right).
+      </p>
+    </div>
+
+    <!-- Figure 3: Augmented State -->
+    <div class="figure-block" style="margin-top: 2.5rem;">
+      <figure class="image">
+        <img src="static/images/figure_3.png" alt="Augmented State Construction" />
+      </figure>
+      <p class="figure-caption">
+        <strong>Figure 2.</strong> Augmented state construction. The ego vehicle's
+        onboard state is always current; the RSU observation arrives with delay ω<sub>t</sub>.
+        Together with the masked action history, these form the full input to the
+        Delay-Aware Encoder.
+      </p>
+    </div>
+
+  </div>
+</section>
+
+<hr class="section-divider" />
+
+<!-- ════════════════════════════════════════════════
+     RESULTS & EXPERIMENTS
+════════════════════════════════════════════════ -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3 has-text-centered section-title">Results &amp; Experiments</h2>
+
+    <div class="content has-text-justified" style="margin-bottom: 2rem;">
+      <p>
+        We evaluated all methods over 500 episodes × 3 random seeds in SUMO, using
+        traffic parameters derived from the NGSIM US-101 dataset. Three traffic density
+        levels stress-test the policy: <strong>Easy</strong> (360 vph/lane),
+        <strong>Medium</strong> (~700 vph/lane), and <strong>Hard</strong> (~1400 vph/lane).
+        All delay experiments use Ω<sub>max</sub> = 2.0 s.
+      </p>
+    </div>
+
+    <!-- Traffic flow table -->
+    <h3 class="title is-5" style="margin-bottom: 1rem;">Traffic Flow Configuration</h3>
+    <div class="table-container" style="margin-bottom: 2.5rem;">
+      <table class="table is-bordered is-striped is-hoverable is-fullwidth result-table">
+        <thead>
+          <tr>
+            <th>Lane</th>
+            <th>Easy (vph)</th>
+            <th>Medium (vph)</th>
+            <th>Hard (vph)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td>360</td><td>720</td><td>1394</td></tr>
+          <tr><td>2</td><td>360</td><td>684</td><td>1460</td></tr>
+          <tr><td>3</td><td>360</td><td>684</td><td>1390</td></tr>
+          <tr><td>4</td><td>360</td><td>684</td><td>1374</td></tr>
+          <tr><td>5</td><td>360</td><td>684</td><td>1490</td></tr>
+        </tbody>
+        <tfoot>
+          <tr><td colspan="4" style="font-size:0.85rem; color:#666;">vph = vehicles per hour.</td></tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <!-- Combined plot figure -->
+    <div class="figure-block" style="margin-bottom: 2.5rem;">
+      <figure class="image">
+        <img src="static/images/combined_plot.png" alt="Training curves across Easy, Medium, Hard modes" />
+      </figure>
+      <p class="figure-caption">
+        <strong>Figure 3.</strong> Training dynamics across Easy, Medium, and Hard modes
+        for GRU, MLP, and Transformer encoders vs. baselines. Rows show average return,
+        critic loss, and actor loss. DAROM-GRU converges consistently across all difficulty
+        levels, while MLP collapses in Hard mode.
+      </p>
+    </div>
+
+    <!-- Main results table -->
+    <h3 class="title is-5" style="margin-bottom: 1rem;">Comparative Performance</h3>
+    <p class="is-size-7" style="margin-bottom: 0.75rem; color:#666;">
+      Results averaged over 500 evaluation episodes × 3 seeds. Bold = best per difficulty.
+      SC = safety controller.
+    </p>
+    <div class="table-container" style="overflow-x: auto; margin-bottom: 2.5rem;">
+      <table class="table is-bordered is-hoverable result-table" style="min-width: 820px;">
+        <thead>
+          <tr>
+            <th>Difficulty</th>
+            <th>Method</th>
+            <th>Success Rate (%)</th>
+            <th>Collision Rate (%)</th>
+            <th>No Merge Rate (%)</th>
+            <th>Avg. Return</th>
+            <th>Avg. Ego Vel.</th>
+            <th>Avg. Jerk</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Easy -->
+          <tr class="difficulty-header"><td colspan="8"><strong>Easy</strong></td></tr>
+          <tr><td></td><td>MPC</td><td>83.37 ± 3.07</td><td>16.30 ± 3.40</td><td>0.33 ± 0.35</td><td>—</td><td>19.25 ± 0.04</td><td>−0.39 ± 0.04</td></tr>
+          <tr><td></td><td>DRL-ORMOC</td><td>96.61 ± 0.90</td><td>3.39 ± 0.90</td><td><strong>0.00 ± 0.00</strong></td><td>143.58 ± 0.58</td><td>27.94 ± 0.08</td><td>−0.18 ± 0.01</td></tr>
+          <tr><td></td><td>No Encoder</td><td>98.00 ± 0.39</td><td>0.53 ± 0.26</td><td>1.46 ± 0.35</td><td>155.81 ± 1.23</td><td>28.82 ± 0.06</td><td>−0.23 ± 0.01</td></tr>
+          <tr class="best-row"><td></td><td><strong>DAROM-MLP</strong></td><td><strong>99.60 ± 0.00</strong></td><td><strong>0.20 ± 0.00</strong></td><td>0.20 ± 0.00</td><td>172.11 ± 0.57</td><td><strong>29.42 ± 0.02</strong></td><td>−0.30 ± 0.01</td></tr>
+          <tr><td></td><td>DAROM-GRU w/o SC</td><td>91.68 ± 1.36</td><td>8.18 ± 1.48</td><td>0.13 ± 0.13</td><td>159.16 ± 3.38</td><td>28.82 ± 0.13</td><td><strong>−0.08 ± 0.01</strong></td></tr>
+          <tr><td></td><td>DAROM-GRU</td><td>98.74 ± 0.26</td><td>0.40 ± 0.23</td><td>0.13 ± 0.26</td><td><strong>173.94 ± 0.61</strong></td><td>29.31 ± 0.06</td><td>−0.27 ± 0.01</td></tr>
+          <tr><td></td><td>DAROM-Transformer</td><td>82.83 ± 0.98</td><td>0.40 ± 0.45</td><td>16.77 ± 1.37</td><td>127.50 ± 2.79</td><td>28.78 ± 0.05</td><td>−0.25 ± 0.01</td></tr>
+          <!-- Medium -->
+          <tr class="difficulty-header"><td colspan="8"><strong>Medium</strong></td></tr>
+          <tr><td></td><td>MPC</td><td>83.63 ± 0.81</td><td>16.30 ± 0.86</td><td>0.07 ± 0.13</td><td>—</td><td>19.23 ± 0.04</td><td>−0.35 ± 0.02</td></tr>
+          <tr><td></td><td>DRL-ORMOC</td><td>94.88 ± 1.28</td><td>4.99 ± 1.04</td><td>0.13 ± 0.26</td><td>142.03 ± 0.74</td><td>27.83 ± 0.09</td><td><strong>−0.19 ± 0.01</strong></td></tr>
+          <tr><td></td><td>No Encoder</td><td>99.07 ± 0.52</td><td>0.13 ± 0.26</td><td>0.80 ± 0.45</td><td>164.57 ± 0.83</td><td>29.37 ± 0.03</td><td>−0.26 ± 0.01</td></tr>
+          <tr><td></td><td>DAROM-MLP</td><td>69.59 ± 1.24</td><td>0.60 ± 0.23</td><td>29.81 ± 1.16</td><td>96.05 ± 2.61</td><td>27.79 ± 0.10</td><td>−0.25 ± 0.01</td></tr>
+          <tr><td></td><td>DAROM-GRU w/o SC</td><td>85.16 ± 1.63</td><td>14.84 ± 1.63</td><td><strong>0.00 ± 0.00</strong></td><td>142.15 ± 4.46</td><td>28.19 ± 0.17</td><td>−0.25 ± 0.02</td></tr>
+          <tr class="best-row"><td></td><td><strong>DAROM-GRU</strong></td><td><strong>99.87 ± 0.13</strong></td><td><strong>0.00 ± 0.00</strong></td><td>0.13 ± 0.13</td><td><strong>178.57 ± 0.32</strong></td><td><strong>29.57 ± 0.00</strong></td><td>−0.36 ± 0.01</td></tr>
+          <tr><td></td><td>DAROM-Transformer</td><td>84.36 ± 1.84</td><td>0.20 ± 0.00</td><td>15.44 ± 1.84</td><td>134.72 ± 4.64</td><td>28.71 ± 0.08</td><td>−0.28 ± 0.01</td></tr>
+          <!-- Hard -->
+          <tr class="difficulty-header"><td colspan="8"><strong>Hard</strong></td></tr>
+          <tr><td></td><td>MPC</td><td>83.10 ± 1.47</td><td>16.70 ± 1.47</td><td>0.20 ± 0.00</td><td>—</td><td>19.24 ± 0.04</td><td>−0.38 ± 0.04</td></tr>
+          <tr><td></td><td>DRL-ORMOC</td><td>90.09 ± 0.86</td><td>9.78 ± 0.81</td><td>0.13 ± 0.13</td><td>138.90 ± 0.20</td><td>27.33 ± 0.14</td><td>−0.21 ± 0.03</td></tr>
+          <tr><td></td><td>No Encoder</td><td>97.41 ± 0.68</td><td>0.13 ± 0.13</td><td>2.46 ± 0.57</td><td>161.15 ± 2.08</td><td>28.96 ± 0.07</td><td>−0.24 ± 0.01</td></tr>
+          <tr><td></td><td>DAROM-MLP</td><td>0.00 ± 0.00</td><td>0.00 ± 0.00</td><td>0.00 ± 0.00</td><td>−196.62 ± 0.27</td><td>0.14 ± 0.00</td><td><strong>0.01 ± 0.00</strong></td></tr>
+          <tr><td></td><td>DAROM-GRU w/o SC</td><td>97.60 ± 0.23</td><td>2.40 ± 0.23</td><td><strong>0.00 ± 0.00</strong></td><td>174.26 ± 0.63</td><td>29.35 ± 0.06</td><td>−0.02 ± 0.01</td></tr>
+          <tr class="best-row"><td></td><td><strong>DAROM-GRU</strong></td><td><strong>99.80 ± 0.23</strong></td><td><strong>0.00 ± 0.00</strong></td><td>0.20 ± 0.23</td><td><strong>179.68 ± 0.51</strong></td><td><strong>29.53 ± 0.00</strong></td><td>−0.02 ± 0.00</td></tr>
+          <tr><td></td><td>DAROM-Transformer</td><td>92.08 ± 1.28</td><td>0.07 ± 0.13</td><td>7.85 ± 1.16</td><td>158.01 ± 2.77</td><td>29.35 ± 0.03</td><td>−0.37 ± 0.01</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Ablation figure -->
+    <div class="figure-block" style="margin-bottom: 2.5rem;">
+      <figure class="image" style="max-width: 600px; margin: 0 auto;">
+        <img src="static/images/figure_5.png" alt="Ablation study in Hard mode" />
+      </figure>
+      <p class="figure-caption">
+        <strong>Figure 4.</strong> Ablation study (Hard mode). The full DAROM-GRU
+        outperforms all partial configurations. Variants missing the action buffer or
+        delay magnitude fail to converge, while the linear state predictor converges
+        to a suboptimal, collision-prone policy.
+      </p>
+    </div>
+
+    <!-- Ablation table -->
+    <h3 class="title is-5" style="margin-bottom: 1rem;">Ablation Study — Hard Mode</h3>
+    <div class="table-container" style="overflow-x: auto; margin-bottom: 2.5rem;">
+      <table class="table is-bordered is-hoverable result-table" style="min-width: 600px;">
+        <thead>
+          <tr>
+            <th>Ablation Variant</th>
+            <th>Success Rate (%)</th>
+            <th>Collision Rate (%)</th>
+            <th>No Merge Rate (%)</th>
+            <th>Avg. Return</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Delayed State Only</td><td>41.25 ± 2.27</td><td>56.75 ± 2.27</td><td>2.00 ± 0.00</td><td>−0.83 ± 5.39</td></tr>
+          <tr><td>Delayed State + Delay Magnitude</td><td>0.00 ± 0.00</td><td>100.00 ± 0.00</td><td><strong>0.00 ± 0.00</strong></td><td>−73.47 ± 0.77</td></tr>
+          <tr><td>Delayed State + Action Buffer</td><td>0.00 ± 0.00</td><td>100.00 ± 0.00</td><td><strong>0.00 ± 0.00</strong></td><td>−67.84 ± 1.52</td></tr>
+          <tr><td>Linear State Predictor</td><td>94.94 ± 2.91</td><td>4.79 ± 3.04</td><td>0.00 ± 0.00</td><td>132.78 ± 6.02</td></tr>
+          <tr class="best-row"><td><strong>Full Augmented State (DAROM-GRU)</strong></td><td><strong>99.80 ± 0.23</strong></td><td><strong>0.00 ± 0.00</strong></td><td>0.20 ± 0.23</td><td><strong>179.68 ± 0.51</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Delay profiles table -->
+    <h3 class="title is-5" style="margin-bottom: 1rem;">Generalization Across Delay Distributions</h3>
+    <p class="is-size-7" style="margin-bottom: 0.75rem; color:#666;">
+      DAROM-GRU trained on Uniform only, evaluated across all five distributions (Hard mode).
+    </p>
+    <div class="table-container" style="overflow-x: auto; margin-bottom: 1rem;">
+      <table class="table is-bordered is-hoverable result-table" style="min-width: 540px;">
+        <thead>
+          <tr>
+            <th>Delay Profile</th>
+            <th>Success Rate (%)</th>
+            <th>Collision Rate (%)</th>
+            <th>No Merge Rate (%)</th>
+            <th>Avg. Return</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Uniform</td><td>99.80 ± 0.23</td><td><strong>0.00 ± 0.00</strong></td><td>0.20 ± 0.23</td><td>179.68 ± 0.51</td></tr>
+          <tr class="best-row"><td>Bimodal</td><td><strong>100.00 ± 0.00</strong></td><td><strong>0.00 ± 0.00</strong></td><td><strong>0.00 ± 0.00</strong></td><td>180.03 ± 0.06</td></tr>
+          <tr class="best-row"><td>Bursty</td><td><strong>100.00 ± 0.00</strong></td><td><strong>0.00 ± 0.00</strong></td><td><strong>0.00 ± 0.00</strong></td><td>180.01 ± 0.03</td></tr>
+          <tr class="best-row"><td>Triangular</td><td><strong>100.00 ± 0.00</strong></td><td><strong>0.00 ± 0.00</strong></td><td><strong>0.00 ± 0.00</strong></td><td>180.01 ± 0.07</td></tr>
+          <tr class="best-row"><td>Exponential</td><td><strong>100.00 ± 0.00</strong></td><td><strong>0.00 ± 0.00</strong></td><td><strong>0.00 ± 0.00</strong></td><td><strong>180.04 ± 0.04</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="is-size-7" style="color:#666; margin-bottom: 0;">
+      Trained once on Uniform delays, DAROM-GRU achieves perfect or near-perfect results across all
+      unseen distributions — without any retraining.
+    </p>
+
+  </div>
+</section>
+
+<hr class="section-divider" />
+
+<!-- ════════════════════════════════════════════════
+     BIBTEX
+════════════════════════════════════════════════ -->
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <h2 class="title is-3 has-text-centered section-title">BibTeX</h2>
+    <pre><code>@article{tabrizian2024darom,
+  author    = {Tabrizian, Amin and Huang, Zhitong and Aziz, Arsyi and Wei, Peng},
+  title     = {Delay-Aware Reinforcement Learning for Highway On-Ramp Merging
+               under Stochastic Communication Latency},
+  year      = {2024},
+  url       = {https://arxiv.org/abs/2403.11852}
+}</code></pre>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════
+     FOOTER
+════════════════════════════════════════════════ -->
+<footer class="footer">
+  <div class="content has-text-centered">
+    <p>
+      Website template adapted from
+      <a href="https://nerfies.github.io" target="_blank">Nerfies</a>.
+      Licensed under
+      <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank">CC BY-SA 4.0</a>.
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>
