@@ -149,7 +149,12 @@ h1, h2, h3, h4, h5, .title {
 }
 
 .return-col {
-  min-width: 150px;
+  min-width: 165px;
+}
+
+.method-col {
+  min-width: 180px;
+  text-align: center !important;
 }
 
 .best-row td {
