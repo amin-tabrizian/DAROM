@@ -1,0 +1,6 @@
+<viewsettings>
+    <!-- GUI-specific configuration for sumo-gui -->
+    <scheme name="real world"/>
+    <!-- Set initial simulation delay (milliseconds) -->
+    <delay value="150"/>
+</viewsettings>

@@ -1,0 +1,11 @@
+# Configuration for Merging Environment
+# Only contains the essential options that the 'options' parameter accepts
+
+# SUMO GUI settings
+nogui: False  # Set to true for headless mode
+
+# Mode for state generation (used in getState calls)
+mode: "default"  # This parameter is passed to getState function
+
+# You can override these values from command line:
+# python main.py nogui=true mode=test
